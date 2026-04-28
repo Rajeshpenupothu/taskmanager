@@ -6,9 +6,11 @@ import com.example.taskmanager.entity.User;
 import com.example.taskmanager.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -27,12 +29,20 @@ public class UserService {
 
         log.info("Signup request for username: {}", signupRequest.getUsername());
 
+        // ✅ Username check
         if (userRepository.findByUsername(signupRequest.getUsername()).isPresent()) {
-            throw new IllegalArgumentException("Username already exists");
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Username already exists"
+            );
         }
 
+        // ✅ Email check
         if (userRepository.findByEmail(signupRequest.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("Email already exists");
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Email already exists"
+            );
         }
 
         User user = User.builder()
@@ -52,21 +62,27 @@ public class UserService {
         );
     }
 
-    // ================= FIND BY EMAIL (🔥 IMPORTANT FIX) =================
+    // ================= FIND BY EMAIL =================
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     log.error("User not found with email: {}", email);
-                    return new IllegalArgumentException("User not found");
+                    return new ResponseStatusException(
+                            HttpStatus.NOT_FOUND,
+                            "User not found"
+                    );
                 });
     }
 
-    // ================= OPTIONAL (keep if needed) =================
+    // ================= FIND BY USERNAME =================
     public User findByUsername(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> {
                     log.error("User not found: {}", username);
-                    return new IllegalArgumentException("User not found");
+                    return new ResponseStatusException(
+                            HttpStatus.NOT_FOUND,
+                            "User not found"
+                    );
                 });
     }
 
@@ -77,13 +93,16 @@ public class UserService {
         log.info("Generating reset token for email: {}", email);
 
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("Email not found"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Email not found"
+                ));
 
         String token = UUID.randomUUID().toString();
 
         user.setResetToken(token);
         user.setResetTokenExpiry(
-                Instant.now().plusSeconds(600).toEpochMilli()
+                Instant.now().plusSeconds(600).toEpochMilli() // 10 minutes
         );
 
         userRepository.save(user);
@@ -100,11 +119,18 @@ public class UserService {
         log.info("Reset password attempt with token");
 
         User user = userRepository.findByResetToken(token)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid token"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Invalid token"
+                ));
 
         if (user.getResetTokenExpiry() == null ||
                 user.getResetTokenExpiry() < System.currentTimeMillis()) {
-            throw new IllegalArgumentException("Token expired");
+
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Token expired"
+            );
         }
 
         user.setPassword(passwordEncoder.encode(newPassword));
