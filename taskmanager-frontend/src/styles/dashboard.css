@@ -1,0 +1,125 @@
+/* LAYOUT */
+.dashboard {
+  display: flex;
+  height: 100vh;
+  background: #f4f6fb;
+  font-family: "Poppins", sans-serif;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 220px;
+  background: #1e1e2f;
+  color: white;
+  padding: 20px;
+}
+
+.sidebar h2 {
+  margin-bottom: 30px;
+}
+
+.menu-item {
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.menu-item.active {
+  background: #2f2f45;
+}
+
+/* MAIN */
+.main {
+  flex: 1;
+  padding: 25px;
+}
+
+/* TOPBAR */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logout-btn {
+  background: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* FORM */
+.task-form {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.task-form input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.task-form button {
+  padding: 10px 16px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* TASK GRID */
+.task-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 15px;
+}
+
+/* CARD */
+.task-card {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.task-card h4 {
+  margin-bottom: 5px;
+}
+
+.task-card p {
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+/* ACTIONS */
+.task-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.task-actions button {
+  background: #ff4d4d;
+  border: none;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* EMPTY STATE */
+.empty-box {
+  text-align: center;
+  padding: 40px;
+  color: #888;
+}
+
+.empty-box span {
+  font-size: 12px;
+}
