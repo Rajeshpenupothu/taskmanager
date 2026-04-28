@@ -47,17 +47,15 @@ public class SecurityConfig {
 public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
     http
-        // ✅ ENABLE CORS (IMPORTANT)
-        .cors()
+        // ✅ NEW CORS STYLE (Spring Security 6)
+        .cors(cors -> {})
 
-        .and()
         .csrf(csrf -> csrf.disable())
 
         .exceptionHandling(ex -> ex.authenticationEntryPoint(authEntryPointJwt))
 
-        // ✅ JWT + OAuth session handling
         .sessionManagement(sess ->
-            sess.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                sess.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
         )
 
         .authorizeHttpRequests(auth -> auth
@@ -68,6 +66,9 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
                         "/swagger-ui/**",
                         "/v3/api-docs/**"
                 ).permitAll()
+
+                // 🔥 CRITICAL: allow preflight requests
+                .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
 
                 // 🔒 Protected endpoints
                 .anyRequest().authenticated()
