@@ -44,41 +44,45 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        http
-            .csrf(csrf -> csrf.disable())
+    http
+        // ✅ ENABLE CORS (IMPORTANT)
+        .cors()
 
-            .exceptionHandling(ex -> ex.authenticationEntryPoint(authEntryPointJwt))
+        .and()
+        .csrf(csrf -> csrf.disable())
 
-            // ✅ JWT + OAuth session handling
-            .sessionManagement(sess ->
-                sess.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-            )
+        .exceptionHandling(ex -> ex.authenticationEntryPoint(authEntryPointJwt))
 
-            .authorizeHttpRequests(auth -> auth
-                    // ✅ Public endpoints
-                    .requestMatchers(
-                            "/auth/**",
-                            "/oauth2/**",
-                            "/swagger-ui/**",
-                            "/v3/api-docs/**"
-                    ).permitAll()
+        // ✅ JWT + OAuth session handling
+        .sessionManagement(sess ->
+            sess.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+        )
 
-                    // 🔒 Protected endpoints
-                    .anyRequest().authenticated()
-            )
+        .authorizeHttpRequests(auth -> auth
+                // ✅ Public endpoints
+                .requestMatchers(
+                        "/auth/**",
+                        "/oauth2/**",
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**"
+                ).permitAll()
 
-            // ✅ Google OAuth
-            .oauth2Login(oauth -> oauth
-                    .successHandler(oAuth2LoginSuccessHandler)
-            );
+                // 🔒 Protected endpoints
+                .anyRequest().authenticated()
+        )
 
-        http.authenticationProvider(authenticationProvider());
+        // ✅ Google OAuth
+        .oauth2Login(oauth -> oauth
+                .successHandler(oAuth2LoginSuccessHandler)
+        );
 
-        // ✅ JWT Filter
-        http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
+    http.authenticationProvider(authenticationProvider());
 
-        return http.build();
-    }
+    // ✅ JWT Filter
+    http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
+
+    return http.build();
+}
 }
