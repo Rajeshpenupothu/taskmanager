@@ -4,6 +4,7 @@ import com.example.taskmanager.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -44,46 +45,48 @@ public class SecurityConfig {
     }
 
     @Bean
-public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-    http
-        // ✅ NEW CORS STYLE (Spring Security 6)
-        .cors(cors -> {})
+        http
+            // ✅ Enable CORS (must be present)
+            .cors(cors -> {})
 
-        .csrf(csrf -> csrf.disable())
+            // ❌ Disable CSRF (since you're using JWT)
+            .csrf(csrf -> csrf.disable())
 
-        .exceptionHandling(ex -> ex.authenticationEntryPoint(authEntryPointJwt))
+            .exceptionHandling(ex -> ex.authenticationEntryPoint(authEntryPointJwt))
 
-        .sessionManagement(sess ->
-                sess.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-        )
+            .sessionManagement(sess ->
+                    sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
 
-        .authorizeHttpRequests(auth -> auth
-                // ✅ Public endpoints
-                .requestMatchers(
-                        "/auth/**",
-                        "/oauth2/**",
-                        "/swagger-ui/**",
-                        "/v3/api-docs/**"
-                ).permitAll()
+            .authorizeHttpRequests(auth -> auth
 
-                // 🔥 CRITICAL: allow preflight requests
-                .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
+                    // 🔥 VERY IMPORTANT → allow preflight FIRST
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                // 🔒 Protected endpoints
-                .anyRequest().authenticated()
-        )
+                    // ✅ Public endpoints
+                    .requestMatchers(
+                            "/auth/**",
+                            "/oauth2/**",
+                            "/swagger-ui/**",
+                            "/v3/api-docs/**"
+                    ).permitAll()
 
-        // ✅ Google OAuth
-        .oauth2Login(oauth -> oauth
-                .successHandler(oAuth2LoginSuccessHandler)
-        );
+                    // 🔒 Everything else secured
+                    .anyRequest().authenticated()
+            )
 
-    http.authenticationProvider(authenticationProvider());
+            // ✅ OAuth2 login
+            .oauth2Login(oauth -> oauth
+                    .successHandler(oAuth2LoginSuccessHandler)
+            );
 
-    // ✅ JWT Filter
-    http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
+        http.authenticationProvider(authenticationProvider());
 
-    return http.build();
-}
+        // ✅ JWT filter
+        http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
+    }
 }

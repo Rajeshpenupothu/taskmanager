@@ -20,7 +20,7 @@ public class CorsConfig {
         // ✅ Allow your frontend domains
         config.setAllowedOriginPatterns(List.of(
                 "http://localhost:3000",
-                "https://taskmanager-1-kxsc.onrender.com"
+                "https://taskmanager-2-ykxw.onrender.com"
         ));
 
         config.setAllowedHeaders(List.of(
