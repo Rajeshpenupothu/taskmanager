@@ -250,3 +250,12 @@ body {
   margin-bottom: 12px;
   text-align: center;
 }
+.error-box {
+  background-color: #ff4d4f;
+  color: white;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 14px;
+}

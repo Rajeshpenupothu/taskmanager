@@ -15,10 +15,10 @@ function Login() {
 
   const navigate = useNavigate();
 
-  // ✅ Auto login if token exists
+  // ✅ Auto login if token exists (safe check)
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (token) {
+    if (token && token !== "undefined" && token !== "null") {
       navigate("/dashboard");
     }
   }, [navigate]);
@@ -26,6 +26,9 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     setErrorMsg("");
+
+    // 🔥 remove old token before login
+    localStorage.removeItem("token");
 
     if (!email || !password) {
       setErrorMsg("Please fill all fields");
@@ -40,22 +43,28 @@ function Login() {
         password,
       });
 
-      // ✅ Save token
       localStorage.setItem("token", res.data.token);
 
-      // ✅ Set header globally
       API.defaults.headers.common["Authorization"] =
         `Bearer ${res.data.token}`;
 
-      // ✅ Redirect
       navigate("/dashboard");
 
     } catch (err) {
-      setErrorMsg(
+
+      // 🔥 minimal smart handling
+      const msg =
         err.response?.data?.message ||
         err.response?.data ||
-        "Invalid email or password"
-      );
+        "Invalid email or password";
+
+      setErrorMsg(msg);
+
+      // 🔥 keep error visible for 4 seconds
+      setTimeout(() => {
+        setErrorMsg("");
+      }, 4000);
+
     } finally {
       setLoading(false);
     }
@@ -72,7 +81,12 @@ function Login() {
 
         <h2>Welcomes You</h2>
 
-        {errorMsg && <p className="error-text">{errorMsg}</p>}
+        {/* ✅ Better error display */}
+        {errorMsg && (
+          <div className="error-box">
+            {errorMsg}
+          </div>
+        )}
 
         <form onSubmit={handleLogin}>
 
@@ -83,7 +97,10 @@ function Login() {
               placeholder=" "
               required
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setErrorMsg(""); // clear error on typing
+              }}
             />
             <label>Email</label>
           </div>
@@ -95,7 +112,10 @@ function Login() {
               placeholder=" "
               required
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setErrorMsg(""); // clear error on typing
+              }}
             />
             <label>Password</label>
 
@@ -121,12 +141,12 @@ function Login() {
           </button>
 
         </form>
+
         {/* SIGNUP LINK */}
         <p className="auth-link">
           Don’t have an account?{" "}
           <span onClick={() => navigate("/signup")}>Sign up</span>
         </p>
-
 
         {/* DIVIDER */}
         <div className="divider">
