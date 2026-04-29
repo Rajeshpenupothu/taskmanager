@@ -13,17 +13,18 @@ body {
 
 /* CONTAINER */
 .login-container {
-  min-height: 100vh; /* ✅ better than height */
+  min-height: 100vh;
+  min-height: 100dvh; /* ✅ mobile fix */
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px; /* ✅ important for mobile */
+  padding: 20px;
 }
 
 /* CARD */
 .login-card {
   width: 100%;
-  max-width: 420px; /* ✅ desktop size */
+  max-width: 420px;
   background: #fff;
   padding: 40px;
   border-radius: 14px;
@@ -49,7 +50,7 @@ body {
   padding: 12px;
   border-radius: 6px;
   border: 1px solid #ccc;
-  font-size: 16px; /* ✅ prevents zoom on mobile */
+  font-size: 16px; /* prevents zoom */
   outline: none;
 }
 
@@ -186,14 +187,15 @@ body {
 
   .login-container {
     padding: 10px;
-    align-items: flex-start; /* better scroll feel */
+    align-items: center;
+    justify-content: center;
   }
 
   .login-card {
     max-width: 100%;
     padding: 20px;
     border-radius: 10px;
-    box-shadow: none; /* cleaner mobile look */
+    box-shadow: none;
   }
 
   .login-card h2 {
