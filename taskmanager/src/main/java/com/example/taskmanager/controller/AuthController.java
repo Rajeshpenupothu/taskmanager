@@ -8,10 +8,13 @@ import com.example.taskmanager.entity.User;
 import com.example.taskmanager.security.JwtUtils;
 import com.example.taskmanager.service.EmailService;
 import com.example.taskmanager.service.UserService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -55,7 +58,7 @@ public class AuthController {
 
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            loginRequest.getEmail(),   // ✅ EMAIL LOGIN
+                            loginRequest.getEmail(),
                             loginRequest.getPassword()
                     )
             );
@@ -83,18 +86,34 @@ public class AuthController {
 
     // ================= FORGOT PASSWORD =================
     @PostMapping("/forgot-password")
-public ResponseEntity<?> forgotPassword(@RequestParam String email) {
+    @Operation(summary = "Send reset password email")
+    public ResponseEntity<?> forgotPassword(@RequestParam String email) {
 
-    String token = userService.generateResetToken(email);
+        log.info("🔥 Forgot password request for email: {}", email);
 
-    String resetLink =
-        "https://taskmanager-2-ykxw.onrender.com/reset/" + token;
+        try {
+            String token = userService.generateResetToken(email);
 
-    // ✅ send email via SendGrid
-    emailService.sendResetEmail(email, resetLink);
+            String resetLink =
+                    "https://taskmanager-2-ykxw.onrender.com/reset/" + token;
 
-    return ResponseEntity.ok("Reset link sent to your email");
-}
+            log.info("🔗 Generated reset link: {}", resetLink);
+
+            // 🔥 IMPORTANT: actually call email service
+            emailService.sendResetEmail(email, resetLink);
+
+            log.info("✅ Email sent successfully to {}", email);
+
+            return ResponseEntity.ok("Reset link sent to your email");
+
+        } catch (Exception e) {
+            log.error("❌ Email sending failed: {}", e.getMessage());
+
+            // 🔥 VERY IMPORTANT: return error instead of fake success
+            return ResponseEntity.status(500)
+                    .body("Email sending failed: " + e.getMessage());
+        }
+    }
 
     // ================= RESET PASSWORD =================
     @PostMapping("/reset-password")
