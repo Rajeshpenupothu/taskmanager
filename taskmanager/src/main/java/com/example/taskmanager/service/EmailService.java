@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class EmailService {
 
-    @Value("${sendgrid.api.key}")
+    @Value("${SENDGRID_API_KEY}")
     private String apiKey;
 
     public void sendResetEmail(String toEmail, String resetLink) {
