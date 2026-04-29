@@ -29,7 +29,6 @@ public class UserService {
 
         log.info("Signup request for username: {}", signupRequest.getUsername());
 
-        // ✅ Username check
         if (userRepository.findByUsername(signupRequest.getUsername()).isPresent()) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
@@ -37,7 +36,6 @@ public class UserService {
             );
         }
 
-        // ✅ Email check
         if (userRepository.findByEmail(signupRequest.getEmail()).isPresent()) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
@@ -53,7 +51,7 @@ public class UserService {
 
         User savedUser = userRepository.save(user);
 
-        log.info("User registered successfully: {}", savedUser.getUsername());
+        log.info("User registered successfully: {}", savedUser.getEmail());
 
         return new UserDTO(
                 savedUser.getId(),
@@ -107,8 +105,9 @@ public class UserService {
 
         userRepository.save(user);
 
-        log.info("Reset token generated for user: {}", user.getUsername());
+        log.info("Reset token generated for user: {}", user.getEmail());
 
+        // ✅ RETURN TOKEN (important for frontend testing)
         return token;
     }
 
@@ -116,7 +115,7 @@ public class UserService {
     @Transactional
     public void resetPassword(String token, String newPassword) {
 
-        log.info("Reset password attempt with token");
+        log.info("Reset password attempt");
 
         User user = userRepository.findByResetToken(token)
                 .orElseThrow(() -> new ResponseStatusException(
@@ -134,12 +133,11 @@ public class UserService {
         }
 
         user.setPassword(passwordEncoder.encode(newPassword));
-
         user.setResetToken(null);
         user.setResetTokenExpiry(null);
 
         userRepository.save(user);
 
-        log.info("Password reset successful for user: {}", user.getUsername());
+        log.info("Password reset successful for user: {}", user.getEmail());
     }
 }

@@ -83,19 +83,22 @@ public class AuthController {
 
     // ================= FORGOT PASSWORD =================
     @PostMapping("/forgot-password")
-    @Operation(summary = "Send reset password email")
-    public ResponseEntity<?> forgotPassword(@RequestParam String email) {
+@Operation(summary = "Generate reset password link")
+public ResponseEntity<?> forgotPassword(@RequestParam String email) {
 
-        log.info("Forgot password request for email: {}", email);
+    log.info("Forgot password request for email: {}", email);
 
-        String token = userService.generateResetToken(email);
+    String token = userService.generateResetToken(email);
 
-        String resetLink = "http://localhost:3000/reset/" + token;
+    // ✅ Use your deployed frontend URL
+    String resetLink = "https://taskmanager-2-ykxw.onrender.com/reset/" + token;
 
-        emailService.sendResetEmail(email, resetLink);
+    // ❌ Disable email for now (prevents hanging)
+     emailService.sendResetEmail(email, resetLink);
 
-        return ResponseEntity.ok("Reset link sent to your email");
-    }
+    // ✅ Return link directly (for testing)
+    return ResponseEntity.ok("Reset link: " + resetLink);
+}
 
     // ================= RESET PASSWORD =================
     @PostMapping("/reset-password")
