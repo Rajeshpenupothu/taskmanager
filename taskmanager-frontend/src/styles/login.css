@@ -11,17 +11,19 @@ body {
   background: #e9edf3;
 }
 
-/* CENTER */
+/* CONTAINER */
 .login-container {
-  height: 100vh;
+  min-height: 100vh; /* ✅ better than height */
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 20px; /* ✅ important for mobile */
 }
 
 /* CARD */
 .login-card {
-  width: 420px;
+  width: 100%;
+  max-width: 420px; /* ✅ desktop size */
   background: #fff;
   padding: 40px;
   border-radius: 14px;
@@ -47,7 +49,7 @@ body {
   padding: 12px;
   border-radius: 6px;
   border: 1px solid #ccc;
-  font-size: 14px;
+  font-size: 16px; /* ✅ prevents zoom on mobile */
   outline: none;
 }
 
@@ -171,10 +173,45 @@ body {
   text-decoration: underline;
 }
 
-/* ERROR TEXT ONLY */
+/* ERROR TEXT */
 .error-text {
   color: red;
   font-size: 13px;
   margin-bottom: 12px;
   text-align: center;
+}
+
+/* ================= MOBILE VIEW ================= */
+@media (max-width: 480px) {
+
+  .login-container {
+    padding: 10px;
+    align-items: flex-start; /* better scroll feel */
+  }
+
+  .login-card {
+    max-width: 100%;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: none; /* cleaner mobile look */
+  }
+
+  .login-card h2 {
+    font-size: 20px;
+  }
+
+  .input-group input {
+    height: 45px;
+    font-size: 16px;
+  }
+
+  .login-btn,
+  .google-btn {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .auth-link {
+    font-size: 13px;
+  }
 }

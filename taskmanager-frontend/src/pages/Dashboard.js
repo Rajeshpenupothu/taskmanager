@@ -23,13 +23,11 @@ function Dashboard() {
   }, []);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) return navigate("/");
     fetchTasks();
-  }, [fetchTasks, navigate]);
+  }, [fetchTasks]);
 
   const addTask = async () => {
-    if (!title) return alert("Title required");
+    if (!title.trim()) return;
 
     try {
       await API.post("/tasks", {

@@ -4,7 +4,7 @@ const API = axios.create({
   baseURL: "https://taskmanager-1-kxsc.onrender.com",
 });
 
-// ✅ Request interceptor (attach token)
+// ✅ REQUEST INTERCEPTOR (attach token)
 API.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -18,18 +18,27 @@ API.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// ✅ Response interceptor (FIXED)
+// ✅ RESPONSE INTERCEPTOR (SAFE VERSION)
 API.interceptors.response.use(
   (response) => response,
   (error) => {
+    const status = error.response?.status;
     const token = localStorage.getItem("token");
 
-    // 🔥 Only redirect if user was logged in
-    if (error.response?.status === 401 && token) {
+    // 🚫 DO NOT redirect for login API
+    const isLoginRequest = error.config?.url?.includes("/auth/login");
+
+    // 🔥 Redirect ONLY if:
+    // - 401 error
+    // - token exists (user was logged in)
+    // - NOT a login request
+    if (status === 401 && token && !isLoginRequest) {
       localStorage.removeItem("token");
 
-      // Instead of full reload, just change URL
-      window.location.replace("/");
+      // prevent reload loop
+      if (window.location.pathname !== "/") {
+        window.location.replace("/");
+      }
     }
 
     return Promise.reject(error);

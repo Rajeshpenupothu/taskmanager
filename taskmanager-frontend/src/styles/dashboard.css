@@ -1,7 +1,7 @@
 /* LAYOUT */
 .dashboard {
   display: flex;
-  height: 100vh;
+  min-height: 100vh;
   background: #f4f6fb;
   font-family: "Poppins", sans-serif;
 }
@@ -39,6 +39,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap; /* ✅ important for mobile */
+  gap: 10px;
 }
 
 .logout-btn {
@@ -122,4 +124,64 @@
 
 .empty-box span {
   font-size: 12px;
+}
+
+/* ================= MOBILE VIEW ================= */
+@media (max-width: 768px) {
+
+  /* Stack layout */
+  .dashboard {
+    flex-direction: column;
+  }
+
+  /* Sidebar becomes top bar */
+  .sidebar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+  }
+
+  .sidebar h2 {
+    margin: 0;
+    font-size: 18px;
+  }
+
+  .menu-item {
+    display: none; /* hide menu for simplicity */
+  }
+
+  /* Main spacing */
+  .main {
+    padding: 15px;
+  }
+
+  /* Form becomes vertical */
+  .task-form {
+    flex-direction: column;
+  }
+
+  .task-form input {
+    width: 100%;
+  }
+
+  .task-form button {
+    width: 100%;
+  }
+
+  /* Grid becomes single column */
+  .task-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Topbar stacking */
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .logout-btn {
+    width: 100%;
+  }
 }

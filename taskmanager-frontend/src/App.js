@@ -9,18 +9,28 @@ import OAuthSuccess from "./pages/OAuthSuccess";
 import PrivateRoute from "./components/PrivateRoute";
 
 function App() {
+  const token = localStorage.getItem("token");
+
   return (
     <BrowserRouter>
       <Routes>
 
-        {/* Public Routes */}
-        <Route path="/" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
+        {/* ✅ Public Routes */}
+        <Route
+          path="/"
+          element={token ? <Navigate to="/dashboard" replace /> : <Login />}
+        />
+
+        <Route
+          path="/signup"
+          element={token ? <Navigate to="/dashboard" replace /> : <Signup />}
+        />
+
         <Route path="/oauth-success" element={<OAuthSuccess />} />
         <Route path="/forgot" element={<ForgotPassword />} />
         <Route path="/reset/:token" element={<ResetPassword />} />
 
-        {/* Protected Route */}
+        {/* 🔒 Protected Route */}
         <Route
           path="/dashboard"
           element={
@@ -30,7 +40,7 @@ function App() {
           }
         />
 
-        {/* ✅ FIXED fallback */}
+        {/* 🔁 Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
 
       </Routes>

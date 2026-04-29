@@ -18,8 +18,8 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    // ❌ REMOVE THIS (causes unwanted behavior)
-    // localStorage.removeItem("token");
+    // Clear previous error only when submitting
+    setErrorMsg("");
 
     if (!email || !password) {
       setErrorMsg("Please fill all fields");
@@ -37,19 +37,20 @@ function Login() {
       // Save token
       localStorage.setItem("token", res.data.token);
 
-      // Set header
+      // Set header for future requests
       API.defaults.headers.common["Authorization"] =
         `Bearer ${res.data.token}`;
 
+      // Navigate on success
       navigate("/dashboard");
 
     } catch (err) {
       const msg =
         err.response?.data?.message ||
-        err.response?.data ||
+        (typeof err.response?.data === "string" && err.response.data) ||
         "Invalid email or password";
 
-      setErrorMsg(msg); // ✅ stays visible now
+      setErrorMsg(msg);
     } finally {
       setLoading(false);
     }
@@ -64,12 +65,10 @@ function Login() {
     <div className="login-container">
       <div className="login-card">
 
-        <h2>Welcomes You</h2>
+        <h2>Welcome</h2>
 
-        {/* ✅ ERROR TEXT */}
-        {errorMsg && (
-          <p className="error-text">{errorMsg}</p>
-        )}
+        {/* ERROR MESSAGE */}
+        {errorMsg && <p className="error-text">{errorMsg}</p>}
 
         <form onSubmit={handleLogin}>
 
@@ -80,10 +79,7 @@ function Login() {
               placeholder=" "
               required
               value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                // ❌ DO NOT clear error here
-              }}
+              onChange={(e) => setEmail(e.target.value)}
             />
             <label>Email</label>
           </div>
@@ -95,10 +91,7 @@ function Login() {
               placeholder=" "
               required
               value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                // ❌ DO NOT clear error here
-              }}
+              onChange={(e) => setPassword(e.target.value)}
             />
             <label>Password</label>
 
