@@ -1,6 +1,10 @@
 package com.example.taskmanager.service;
 
-import com.sendgrid.*;
+import com.sendgrid.SendGrid;
+import com.sendgrid.Request;
+import com.sendgrid.Response;
+import com.sendgrid.Method;
+
 import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Email;
 import com.sendgrid.helpers.mail.objects.Content;
@@ -14,18 +18,22 @@ public class EmailService {
     @Value("${sendgrid.api.key}")
     private String apiKey;
 
-    private static final String FROM_EMAIL = "tmanager511@gmail.com";
-
     public void sendResetEmail(String toEmail, String resetLink) {
 
-        Email from = new Email(FROM_EMAIL);
+        // ✅ FIX: Use SendGrid trusted sender (NOT gmail)
+        Email from = new Email("onboarding@sendgrid.net", "Task Manager");
+
         Email to = new Email(toEmail);
 
         String subject = "Reset Your Password";
 
+        // ✅ Better deliverability with HTML
         Content content = new Content(
-                "text/plain",
-                "Click the link below to reset your password:\n\n" + resetLink
+                "text/html",
+                "<h3>Password Reset</h3>" +
+                "<p>Click the button below to reset your password:</p>" +
+                "<a href='" + resetLink + "' " +
+                "style='padding:10px 15px;background:#4CAF50;color:white;text-decoration:none;'>Reset Password</a>"
         );
 
         Mail mail = new Mail(from, subject, to, content);
@@ -40,7 +48,9 @@ public class EmailService {
 
             Response response = sg.api(request);
 
+            // ✅ Debug logs
             System.out.println("EMAIL STATUS: " + response.getStatusCode());
+            System.out.println("RESPONSE BODY: " + response.getBody());
 
             if (response.getStatusCode() >= 400) {
                 throw new RuntimeException("SendGrid error: " + response.getBody());
