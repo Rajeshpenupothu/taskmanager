@@ -15,11 +15,9 @@ function Login() {
 
   const navigate = useNavigate();
 
-  // ✅ FIXED: safer auto login
+  // ✅ keep as it is (no issue here now)
   useEffect(() => {
     const token = localStorage.getItem("token");
-
-    // 🔥 Only redirect if token exists AND user is not interacting
     if (token && !email && !password) {
       navigate("/dashboard");
     }
@@ -29,7 +27,6 @@ function Login() {
     e.preventDefault();
     setErrorMsg("");
 
-    // 🔥 remove old token before login
     localStorage.removeItem("token");
 
     if (!email || !password) {
@@ -61,8 +58,6 @@ function Login() {
 
       setErrorMsg(msg);
 
-      // ❌ REMOVE timeout completely (this was causing issue)
-
     } finally {
       setLoading(false);
     }
@@ -79,7 +74,6 @@ function Login() {
 
         <h2>Welcomes You</h2>
 
-        {/* ✅ Stable error (no flicker) */}
         {errorMsg && (
           <div className="error-box">
             {errorMsg}
@@ -95,10 +89,7 @@ function Login() {
               placeholder=" "
               required
               value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                setErrorMsg(""); // clear only on typing
-              }}
+              onChange={(e) => setEmail(e.target.value)}   // ❌ removed error clear
             />
             <label>Email</label>
           </div>
@@ -110,10 +101,7 @@ function Login() {
               placeholder=" "
               required
               value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                setErrorMsg(""); // clear only on typing
-              }}
+              onChange={(e) => setPassword(e.target.value)} // ❌ removed error clear
             />
             <label>Password</label>
 
@@ -125,7 +113,6 @@ function Login() {
             </span>
           </div>
 
-          {/* FORGOT */}
           <p
             className="links"
             onClick={() => navigate("/forgot")}
@@ -133,27 +120,23 @@ function Login() {
             Forgot password?
           </p>
 
-          {/* BUTTON */}
           <button className="login-btn" disabled={loading}>
             {loading ? "Signing in..." : "SIGN IN"}
           </button>
 
         </form>
 
-        {/* SIGNUP */}
         <p className="auth-link">
           Don’t have an account?{" "}
           <span onClick={() => navigate("/signup")}>Sign up</span>
         </p>
 
-        {/* DIVIDER */}
         <div className="divider">
           <span></span>
           <p>or</p>
           <span></span>
         </div>
 
-        {/* GOOGLE */}
         <button className="google-btn" onClick={handleGoogleLogin}>
           <FcGoogle /> SIGN IN WITH GOOGLE
         </button>
