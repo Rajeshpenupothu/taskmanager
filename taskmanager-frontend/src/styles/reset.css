@@ -85,3 +85,16 @@
   color: #1a73e8;
   cursor: pointer;
 }
+/* PASSWORD ICON FIX */
+.password-group {
+  position: relative;
+}
+
+.eye-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #666;
+}

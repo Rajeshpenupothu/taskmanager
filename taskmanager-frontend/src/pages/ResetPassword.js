@@ -1,6 +1,7 @@
 import { useState } from "react";
 import API from "../services/api";
 import { useNavigate, useParams } from "react-router-dom";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 import "../styles/reset.css";
 
 function ResetPassword() {
@@ -9,6 +10,9 @@ function ResetPassword() {
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
@@ -38,10 +42,7 @@ function ResetPassword() {
       setLoading(true);
 
       await API.post("/auth/reset-password", null, {
-        params: {
-          token,
-          password,
-        },
+        params: { token, password },
       });
 
       setSuccessMsg("Password updated successfully!");
@@ -70,24 +71,40 @@ function ResetPassword() {
 
         <form onSubmit={handleReset}>
 
-          <div className="input-group">
+          {/* PASSWORD */}
+          <div className="input-group password-group">
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder=" "
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
             <label>New Password</label>
+
+            <span
+              className="eye-icon"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <FiEyeOff /> : <FiEye />}
+            </span>
           </div>
 
-          <div className="input-group">
+          {/* CONFIRM PASSWORD */}
+          <div className="input-group password-group">
             <input
-              type="password"
+              type={showConfirm ? "text" : "password"}
               placeholder=" "
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
             <label>Confirm Password</label>
+
+            <span
+              className="eye-icon"
+              onClick={() => setShowConfirm(!showConfirm)}
+            >
+              {showConfirm ? <FiEyeOff /> : <FiEye />}
+            </span>
           </div>
 
           <button disabled={loading}>
