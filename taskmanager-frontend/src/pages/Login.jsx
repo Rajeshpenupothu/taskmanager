@@ -18,7 +18,8 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    localStorage.removeItem("token");
+    // ❌ REMOVE THIS (causes unwanted behavior)
+    // localStorage.removeItem("token");
 
     if (!email || !password) {
       setErrorMsg("Please fill all fields");
@@ -36,11 +37,10 @@ function Login() {
       // Save token
       localStorage.setItem("token", res.data.token);
 
-      // Set default header
+      // Set header
       API.defaults.headers.common["Authorization"] =
         `Bearer ${res.data.token}`;
 
-      // Navigate only on success
       navigate("/dashboard");
 
     } catch (err) {
@@ -49,7 +49,7 @@ function Login() {
         err.response?.data ||
         "Invalid email or password";
 
-      setErrorMsg(msg);
+      setErrorMsg(msg); // ✅ stays visible now
     } finally {
       setLoading(false);
     }
@@ -66,7 +66,7 @@ function Login() {
 
         <h2>Welcomes You</h2>
 
-        {/* ERROR TEXT ONLY */}
+        {/* ✅ ERROR TEXT */}
         {errorMsg && (
           <p className="error-text">{errorMsg}</p>
         )}
@@ -82,7 +82,7 @@ function Login() {
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
-                setErrorMsg(""); // clear only on typing
+                // ❌ DO NOT clear error here
               }}
             />
             <label>Email</label>
@@ -97,7 +97,7 @@ function Login() {
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
-                setErrorMsg(""); // clear only on typing
+                // ❌ DO NOT clear error here
               }}
             />
             <label>Password</label>
