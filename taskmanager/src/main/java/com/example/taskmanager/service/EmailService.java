@@ -1,13 +1,8 @@
 package com.example.taskmanager.service;
 
-import com.sendgrid.SendGrid;
-import com.sendgrid.Request;
-import com.sendgrid.Response;
-import com.sendgrid.Method;
-
+import com.sendgrid.*;
 import com.sendgrid.helpers.mail.Mail;
-import com.sendgrid.helpers.mail.objects.Email;
-import com.sendgrid.helpers.mail.objects.Content;
+import com.sendgrid.helpers.mail.objects.*;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -32,25 +27,42 @@ public class EmailService {
             throw new RuntimeException("❌ SENDGRID_API_KEY is missing!");
         }
 
-        // Optional: print only part of API key for debugging
-        System.out.println("🔑 API KEY (partial): " + apiKey.substring(0, 5) + "*****");
-
         try {
-            // ✅ Sender (must be verified in SendGrid)
+            // ✅ Sender
             Email from = new Email(FROM_EMAIL, FROM_NAME);
 
             // ✅ Receiver
             Email to = new Email(toEmail);
 
-            String subject = "Reset Your Password";
+            String subject = "Task Manager - Reset Your Password";
 
-            // ✅ Use simple content (safe delivery)
+            // ✅ Clean HTML Email (professional look)
             Content content = new Content(
-                    "text/plain",
-                    "Click the link below to reset your password:\n\n" + resetLink
+                    "text/html",
+                    "<div style='font-family:Arial,sans-serif; padding:20px;'>"
+                    + "<h2 style='color:#333;'>Reset Your Password</h2>"
+                    + "<p>Hello,</p>"
+                    + "<p>Click the button below to reset your password:</p>"
+
+                    + "<a href='" + resetLink + "' "
+                    + "style='display:inline-block;padding:12px 20px;"
+                    + "background-color:#4CAF50;color:white;text-decoration:none;"
+                    + "border-radius:5px;font-weight:bold;'>"
+                    + "Reset Password</a>"
+
+                    + "<p style='margin-top:20px;'>This link will expire in 10 minutes.</p>"
+                    + "<p>If you didn’t request this, ignore this email.</p>"
+
+                    + "<br><p style='color:#888;'>Task Manager Team</p>"
+                    + "</div>"
             );
 
             Mail mail = new Mail(from, subject, to, content);
+
+            // ✅ IMPORTANT: Disable SendGrid tracking (removes ugly long links)
+            TrackingSettings trackingSettings = new TrackingSettings();
+            trackingSettings.setClickTracking(new ClickTracking(false, false));
+            mail.setTrackingSettings(trackingSettings);
 
             SendGrid sg = new SendGrid(apiKey);
 
@@ -66,7 +78,7 @@ public class EmailService {
             System.out.println("✅ SENDGRID STATUS: " + response.getStatusCode());
             System.out.println("📨 SENDGRID RESPONSE: " + response.getBody());
 
-            // ❌ Handle SendGrid errors properly
+            // ❌ Handle errors
             if (response.getStatusCode() >= 400) {
                 throw new RuntimeException(
                         "SendGrid failed: " + response.getStatusCode() + " - " + response.getBody()
