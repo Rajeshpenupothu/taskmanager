@@ -18,28 +18,40 @@ public class EmailService {
     @Value("${SENDGRID_API_KEY}")
     private String apiKey;
 
+    // ✅ MUST match verified sender in SendGrid
+    private static final String FROM_EMAIL = "tmanager511@gmail.com";
+    private static final String FROM_NAME = "Task Manager";
+
     public void sendResetEmail(String toEmail, String resetLink) {
 
         System.out.println("🚀 EMAIL SERVICE STARTED");
         System.out.println("📩 To: " + toEmail);
-        System.out.println("🔑 API KEY: " + apiKey);
 
-        // 🔥 VERY IMPORTANT: Use safe sender (avoids Gmail blocking)
-        Email from = new Email("test@example.com", "Task Manager");
+        // 🔒 Safety check
+        if (apiKey == null || apiKey.isEmpty()) {
+            throw new RuntimeException("❌ SENDGRID_API_KEY is missing!");
+        }
 
-        Email to = new Email(toEmail);
-
-        String subject = "Reset Your Password";
-
-        // ✅ Simple content first (reduce failure chances)
-        Content content = new Content(
-                "text/plain",
-                "Click this link to reset your password:\n" + resetLink
-        );
-
-        Mail mail = new Mail(from, subject, to, content);
+        // Optional: print only part of API key for debugging
+        System.out.println("🔑 API KEY (partial): " + apiKey.substring(0, 5) + "*****");
 
         try {
+            // ✅ Sender (must be verified in SendGrid)
+            Email from = new Email(FROM_EMAIL, FROM_NAME);
+
+            // ✅ Receiver
+            Email to = new Email(toEmail);
+
+            String subject = "Reset Your Password";
+
+            // ✅ Use simple content (safe delivery)
+            Content content = new Content(
+                    "text/plain",
+                    "Click the link below to reset your password:\n\n" + resetLink
+            );
+
+            Mail mail = new Mail(from, subject, to, content);
+
             SendGrid sg = new SendGrid(apiKey);
 
             Request request = new Request();
@@ -47,18 +59,24 @@ public class EmailService {
             request.setEndpoint("mail/send");
             request.setBody(mail.build());
 
-            System.out.println("📡 Sending request to SendGrid...");
+            System.out.println("📡 Sending email via SendGrid...");
 
             Response response = sg.api(request);
 
             System.out.println("✅ SENDGRID STATUS: " + response.getStatusCode());
             System.out.println("📨 SENDGRID RESPONSE: " + response.getBody());
 
+            // ❌ Handle SendGrid errors properly
             if (response.getStatusCode() >= 400) {
-                throw new RuntimeException("SendGrid error: " + response.getBody());
+                throw new RuntimeException(
+                        "SendGrid failed: " + response.getStatusCode() + " - " + response.getBody()
+                );
             }
 
+            System.out.println("🎉 Email sent successfully!");
+
         } catch (Exception e) {
+            System.out.println("❌ EMAIL ERROR: " + e.getMessage());
             e.printStackTrace();
             throw new RuntimeException("Email sending failed: " + e.getMessage());
         }
