@@ -17,7 +17,6 @@ function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setErrorMsg("");
 
     localStorage.removeItem("token");
 
@@ -34,11 +33,14 @@ function Login() {
         password,
       });
 
+      // Save token
       localStorage.setItem("token", res.data.token);
 
+      // Set default header
       API.defaults.headers.common["Authorization"] =
         `Bearer ${res.data.token}`;
 
+      // Navigate only on success
       navigate("/dashboard");
 
     } catch (err) {
@@ -64,10 +66,9 @@ function Login() {
 
         <h2>Welcomes You</h2>
 
+        {/* ERROR TEXT ONLY */}
         {errorMsg && (
-          <div className="error-box">
-            {errorMsg}
-          </div>
+          <p className="error-text">{errorMsg}</p>
         )}
 
         <form onSubmit={handleLogin}>
@@ -79,7 +80,10 @@ function Login() {
               placeholder=" "
               required
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setErrorMsg(""); // clear only on typing
+              }}
             />
             <label>Email</label>
           </div>
@@ -91,7 +95,10 @@ function Login() {
               placeholder=" "
               required
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setErrorMsg(""); // clear only on typing
+              }}
             />
             <label>Password</label>
 
@@ -110,7 +117,11 @@ function Login() {
             Forgot password?
           </p>
 
-          <button className="login-btn" disabled={loading}>
+          <button
+            type="submit"
+            className="login-btn"
+            disabled={loading}
+          >
             {loading ? "Signing in..." : "SIGN IN"}
           </button>
 
