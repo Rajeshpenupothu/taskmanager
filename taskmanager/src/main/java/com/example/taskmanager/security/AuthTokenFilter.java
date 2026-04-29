@@ -33,7 +33,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
 
-        // ✅ Skip public endpoints
+        // ✅ Skip public endpoints (IMPORTANT)
         if (path.startsWith("/auth")
                 || path.startsWith("/oauth2")
                 || path.startsWith("/login")) {
@@ -45,29 +45,38 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         try {
             String jwt = parseJwt(request);
 
-            if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
+            if (jwt != null) {
 
-                // 🔥 IMPORTANT: this is EMAIL (not username)
-                String email = jwtUtils.getUserNameFromJwtToken(jwt);
+                if (jwtUtils.validateJwtToken(jwt)) {
 
-                // 🔥 Load by EMAIL
-                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+                    // 🔥 JWT subject = EMAIL
+                    String email = jwtUtils.getUserNameFromJwtToken(jwt);
 
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails,
-                                null,
-                                userDetails.getAuthorities());
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
-                authentication.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request)
-                );
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(
+                                    userDetails,
+                                    null,
+                                    userDetails.getAuthorities());
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                    authentication.setDetails(
+                            new WebAuthenticationDetailsSource().buildDetails(request)
+                    );
+
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                    log.info("✅ Authenticated user: {}", email);
+
+                } else {
+                    log.error("❌ Invalid JWT token");
+                }
+            } else {
+                log.warn("⚠️ No JWT token found in request");
             }
 
         } catch (Exception e) {
-            log.error("Cannot set user authentication: {}", e.getMessage());
+            log.error("🔥 JWT ERROR: {}", e.getMessage());
             SecurityContextHolder.clearContext();
         }
 
