@@ -1,62 +1,48 @@
 package com.example.taskmanager.service;
 
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
-import lombok.RequiredArgsConstructor;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
+import com.sendgrid.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+
 @Service
-@RequiredArgsConstructor
 public class EmailService {
 
-    private final JavaMailSender mailSender;
+    @Value("${SENDGRID_API_KEY}")
+    private String apiKey;
+
+    // ⚠️ must be the same email you VERIFIED in SendGrid
+    private static final String FROM_EMAIL = "tmanager511@gmail.com";
 
     public void sendResetEmail(String toEmail, String resetLink) {
+        Email from = new Email(FROM_EMAIL);
+        Email to = new Email(toEmail);
+
+        String subject = "Reset your password";
+        Content content = new Content(
+                "text/plain",
+                "Click the link to reset your password:\n\n" + resetLink
+        );
+
+        Mail mail = new Mail(from, subject, to, content);
+
+        SendGrid sg = new SendGrid(apiKey);
+        Request request = new Request();
 
         try {
-            MimeMessage message = mailSender.createMimeMessage();
+            request.setMethod(Method.POST);
+            request.setEndpoint("mail/send");
+            request.setBody(mail.build());
 
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            Response response = sg.api(request);
 
-            helper.setTo(toEmail);
-            helper.setSubject("Reset Your Password");
+            System.out.println("SendGrid status: " + response.getStatusCode());
+            System.out.println(response.getBody());
+            System.out.println(response.getHeaders());
 
-            // 🔥 HTML EMAIL
-            String htmlContent = """
-                <div style="font-family: Arial, sans-serif; padding: 20px;">
-                    <h2>Reset Your Password</h2>
-                    <p>Hello,</p>
-                    <p>Click the button below to reset your password:</p>
-
-                    <a href="%s" 
-                       style="
-                        display: inline-block;
-                        padding: 10px 20px;
-                        background-color: #4CAF50;
-                        color: white;
-                        text-decoration: none;
-                        border-radius: 5px;
-                        font-weight: bold;
-                       ">
-                        Reset Password
-                    </a>
-
-                    <p style="margin-top: 20px;">
-                        This link will expire in 10 minutes.
-                    </p>
-
-                    <p>If you didn't request this, ignore this email.</p>
-                </div>
-                """.formatted(resetLink);
-
-            helper.setText(htmlContent, true); // true = HTML
-
-            mailSender.send(message);
-
-        } catch (MessagingException e) {
-            throw new RuntimeException("Failed to send email");
+        } catch (IOException ex) {
+            throw new RuntimeException("SendGrid email failed", ex);
         }
     }
 }

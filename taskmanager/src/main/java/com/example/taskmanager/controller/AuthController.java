@@ -83,21 +83,17 @@ public class AuthController {
 
     // ================= FORGOT PASSWORD =================
     @PostMapping("/forgot-password")
-@Operation(summary = "Generate reset password link")
 public ResponseEntity<?> forgotPassword(@RequestParam String email) {
-
-    log.info("Forgot password request for email: {}", email);
 
     String token = userService.generateResetToken(email);
 
-    // ✅ Use your deployed frontend URL
-    String resetLink = "https://taskmanager-2-ykxw.onrender.com/reset/" + token;
+    String resetLink =
+        "https://taskmanager-2-ykxw.onrender.com/reset/" + token;
 
-    // ❌ Disable email for now (prevents hanging)
-     emailService.sendResetEmail(email, resetLink);
+    // ✅ send email via SendGrid
+    emailService.sendResetEmail(email, resetLink);
 
-    // ✅ Return link directly (for testing)
-    return ResponseEntity.ok("Reset link: " + resetLink);
+    return ResponseEntity.ok("Reset link sent to your email");
 }
 
     // ================= RESET PASSWORD =================
