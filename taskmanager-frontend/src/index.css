@@ -11,3 +11,15 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+/* Remove tap highlight (mobile) */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Prevent unwanted text selection */
+h1, h2, h3, h4, h5, h6,
+p, span, div,
+button, a {
+  -webkit-user-select: none;
+  user-select: none;
+}
