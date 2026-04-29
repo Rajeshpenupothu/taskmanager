@@ -4,8 +4,10 @@ import com.example.taskmanager.dto.SignupRequestDTO;
 import com.example.taskmanager.dto.UserDTO;
 import com.example.taskmanager.entity.User;
 import com.example.taskmanager.repository.UserRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -107,7 +109,6 @@ public class UserService {
 
         log.info("Reset token generated for user: {}", user.getEmail());
 
-        // ✅ RETURN TOKEN (important for frontend testing)
         return token;
     }
 
@@ -120,19 +121,22 @@ public class UserService {
         User user = userRepository.findByResetToken(token)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
-                        "Invalid token"
+                        "Invalid or expired token"
                 ));
 
-        if (user.getResetTokenExpiry() == null ||
-                user.getResetTokenExpiry() < System.currentTimeMillis()) {
-
+        // ✅ Expiry validation
+        Long expiry = user.getResetTokenExpiry();
+        if (expiry == null || expiry < System.currentTimeMillis()) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Token expired"
             );
         }
 
+        // ✅ Update password
         user.setPassword(passwordEncoder.encode(newPassword));
+
+        // ✅ Clear token
         user.setResetToken(null);
         user.setResetTokenExpiry(null);
 
