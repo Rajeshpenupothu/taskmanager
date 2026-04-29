@@ -15,13 +15,15 @@ function Login() {
 
   const navigate = useNavigate();
 
-  // ✅ Auto login if token exists (safe check)
+  // ✅ FIXED: safer auto login
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (token && token !== "undefined" && token !== "null") {
+
+    // 🔥 Only redirect if token exists AND user is not interacting
+    if (token && !email && !password) {
       navigate("/dashboard");
     }
-  }, [navigate]);
+  }, [navigate, email, password]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -52,7 +54,6 @@ function Login() {
 
     } catch (err) {
 
-      // 🔥 minimal smart handling
       const msg =
         err.response?.data?.message ||
         err.response?.data ||
@@ -60,10 +61,7 @@ function Login() {
 
       setErrorMsg(msg);
 
-      // 🔥 keep error visible for 4 seconds
-      setTimeout(() => {
-        setErrorMsg("");
-      }, 4000);
+      // ❌ REMOVE timeout completely (this was causing issue)
 
     } finally {
       setLoading(false);
@@ -81,7 +79,7 @@ function Login() {
 
         <h2>Welcomes You</h2>
 
-        {/* ✅ Better error display */}
+        {/* ✅ Stable error (no flicker) */}
         {errorMsg && (
           <div className="error-box">
             {errorMsg}
@@ -99,7 +97,7 @@ function Login() {
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
-                setErrorMsg(""); // clear error on typing
+                setErrorMsg(""); // clear only on typing
               }}
             />
             <label>Email</label>
@@ -114,7 +112,7 @@ function Login() {
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
-                setErrorMsg(""); // clear error on typing
+                setErrorMsg(""); // clear only on typing
               }}
             />
             <label>Password</label>
@@ -142,7 +140,7 @@ function Login() {
 
         </form>
 
-        {/* SIGNUP LINK */}
+        {/* SIGNUP */}
         <p className="auth-link">
           Don’t have an account?{" "}
           <span onClick={() => navigate("/signup")}>Sign up</span>
