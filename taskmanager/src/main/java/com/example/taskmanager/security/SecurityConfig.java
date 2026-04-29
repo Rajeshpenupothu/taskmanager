@@ -72,7 +72,8 @@ public class SecurityConfig {
                             "/swagger-ui/**",
                             "/login/**",
                              "/login/oauth2/**",
-                            "/v3/api-docs/**"
+                            "/v3/api-docs/**",
+                            "/ping"
                     ).permitAll()
 
                     // 🔒 Everything else secured
