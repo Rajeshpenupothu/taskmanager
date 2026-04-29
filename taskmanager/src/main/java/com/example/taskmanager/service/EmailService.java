@@ -20,43 +20,46 @@ public class EmailService {
 
     public void sendResetEmail(String toEmail, String resetLink) {
 
-        // ✅ FIX: Use SendGrid trusted sender (NOT gmail)
-        Email from = new Email("tmanager511@gmail.com", "Task Manager");
+        System.out.println("🚀 EMAIL SERVICE STARTED");
+        System.out.println("📩 To: " + toEmail);
+        System.out.println("🔑 API KEY: " + apiKey);
+
+        // 🔥 VERY IMPORTANT: Use safe sender (avoids Gmail blocking)
+        Email from = new Email("test@example.com", "Task Manager");
 
         Email to = new Email(toEmail);
 
         String subject = "Reset Your Password";
 
-        // ✅ Better deliverability with HTML
+        // ✅ Simple content first (reduce failure chances)
         Content content = new Content(
-                "text/html",
-                "<h3>Password Reset</h3>" +
-                "<p>Click the button below to reset your password:</p>" +
-                "<a href='" + resetLink + "' " +
-                "style='padding:10px 15px;background:#4CAF50;color:white;text-decoration:none;'>Reset Password</a>"
+                "text/plain",
+                "Click this link to reset your password:\n" + resetLink
         );
 
         Mail mail = new Mail(from, subject, to, content);
 
-        SendGrid sg = new SendGrid(apiKey);
-
         try {
+            SendGrid sg = new SendGrid(apiKey);
+
             Request request = new Request();
             request.setMethod(Method.POST);
             request.setEndpoint("mail/send");
             request.setBody(mail.build());
 
+            System.out.println("📡 Sending request to SendGrid...");
+
             Response response = sg.api(request);
 
-            // ✅ Debug logs
-            System.out.println("EMAIL STATUS: " + response.getStatusCode());
-            System.out.println("RESPONSE BODY: " + response.getBody());
+            System.out.println("✅ SENDGRID STATUS: " + response.getStatusCode());
+            System.out.println("📨 SENDGRID RESPONSE: " + response.getBody());
 
             if (response.getStatusCode() >= 400) {
                 throw new RuntimeException("SendGrid error: " + response.getBody());
             }
 
         } catch (Exception e) {
+            e.printStackTrace();
             throw new RuntimeException("Email sending failed: " + e.getMessage());
         }
     }
