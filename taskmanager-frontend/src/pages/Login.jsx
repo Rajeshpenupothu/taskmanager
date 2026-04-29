@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import { FiEye, FiEyeOff } from "react-icons/fi";
@@ -14,14 +14,6 @@ function Login() {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-
-  // ✅ keep as it is (no issue here now)
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token && !email && !password) {
-      navigate("/dashboard");
-    }
-  }, [navigate, email, password]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -50,14 +42,12 @@ function Login() {
       navigate("/dashboard");
 
     } catch (err) {
-
       const msg =
         err.response?.data?.message ||
         err.response?.data ||
         "Invalid email or password";
 
       setErrorMsg(msg);
-
     } finally {
       setLoading(false);
     }
@@ -89,7 +79,7 @@ function Login() {
               placeholder=" "
               required
               value={email}
-              onChange={(e) => setEmail(e.target.value)}   // ❌ removed error clear
+              onChange={(e) => setEmail(e.target.value)}
             />
             <label>Email</label>
           </div>
@@ -101,7 +91,7 @@ function Login() {
               placeholder=" "
               required
               value={password}
-              onChange={(e) => setPassword(e.target.value)} // ❌ removed error clear
+              onChange={(e) => setPassword(e.target.value)}
             />
             <label>Password</label>
 
