@@ -94,7 +94,7 @@ public ResponseEntity<?> forgotPassword(@RequestParam String email) {
     String resetLink = "https://taskmanager-2-ykxw.onrender.com/reset/" + token;
 
     // ❌ Disable email for now (prevents hanging)
-     emailService.sendResetEmail(email, resetLink);
+     //emailService.sendResetEmail(email, resetLink);
 
     // ✅ Return link directly (for testing)
     return ResponseEntity.ok("Reset link: " + resetLink);
