@@ -2,6 +2,7 @@ package com.example.taskmanager.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
@@ -11,8 +12,11 @@ import java.util.Date;
 @Component
 public class JwtUtils {
 
-    private final String jwtSecret = "mySecretKeyMySecretKeyMySecretKey123"; // 🔐 must be long
-    private final long jwtExpirationMs = 86400000; // 1 day
+    @Value("${jwt.secret}")
+    private String jwtSecret;
+
+    @Value("${jwt.expiration}")
+    private long jwtExpirationMs;
 
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes());
@@ -20,17 +24,17 @@ public class JwtUtils {
 
     // 🔥 GENERATE TOKEN
     public String generateToken(Authentication authentication) {
-        String username = authentication.getName();
+        String email = authentication.getName();
 
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(email) // ✅ email
                 .setIssuedAt(new Date())
-                .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    // 🔥 GET USERNAME (EMAIL)
+    // 🔥 GET EMAIL
     public String getUserNameFromJwtToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
@@ -51,6 +55,7 @@ public class JwtUtils {
             return true;
 
         } catch (JwtException e) {
+            System.out.println("JWT error: " + e.getMessage()); // 🔥 debug
             return false;
         }
     }

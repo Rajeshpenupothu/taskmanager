@@ -33,19 +33,25 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
 
-        // ✅ Skip authentication for public endpoints
-        if (path.startsWith("/oauth2") || path.startsWith("/login")) {
-        filterChain.doFilter(request, response);
-        return;
-    }
+        // ✅ Skip public endpoints
+        if (path.startsWith("/auth")
+                || path.startsWith("/oauth2")
+                || path.startsWith("/login")) {
+
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         try {
             String jwt = parseJwt(request);
 
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
-                String username = jwtUtils.getUserNameFromJwtToken(jwt);
 
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                // 🔥 IMPORTANT: this is EMAIL (not username)
+                String email = jwtUtils.getUserNameFromJwtToken(jwt);
+
+                // 🔥 Load by EMAIL
+                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
