@@ -21,7 +21,7 @@ public class EmailService {
     public void sendResetEmail(String toEmail, String resetLink) {
 
         // ✅ FIX: Use SendGrid trusted sender (NOT gmail)
-        Email from = new Email("onboarding@sendgrid.net", "Task Manager");
+        Email from = new Email("tmanager511@gmail.com", "Task Manager");
 
         Email to = new Email(toEmail);
 
