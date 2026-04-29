@@ -34,10 +34,10 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
 
         // ✅ Skip authentication for public endpoints
-        if (path.contains("/auth/") || path.contains("/oauth2/")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+        if (path.startsWith("/oauth2") || path.startsWith("/login")) {
+        filterChain.doFilter(request, response);
+        return;
+    }
 
         try {
             String jwt = parseJwt(request);
