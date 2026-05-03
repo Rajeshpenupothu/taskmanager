@@ -7,6 +7,8 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import OAuthSuccess from "./pages/OAuthSuccess";
 import PrivateRoute from "./components/PrivateRoute";
+import Learning from "./pages/Learning";
+import Revision from "./pages/Revision";
 
 function App() {
   const token = localStorage.getItem("token");
@@ -29,6 +31,8 @@ function App() {
         <Route path="/oauth-success" element={<OAuthSuccess />} />
         <Route path="/forgot" element={<ForgotPassword />} />
         <Route path="/reset/:token" element={<ResetPassword />} />
+        <Route path="/learning" element={<Learning />} />
+        <Route path="/revision" element={<Revision />} />
 
         {/* 🔒 Protected Route */}
         <Route

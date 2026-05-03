@@ -64,7 +64,30 @@ function Dashboard() {
       {/* Sidebar */}
       <div className="sidebar">
         <h2>TaskManager</h2>
-        <p className="menu-item active">Dashboard</p>
+
+        {/* EXISTING */}
+        <p
+          className="menu-item active"
+          onClick={() => navigate("/dashboard")}
+        >
+          Dashboard
+        </p>
+
+        {/* ✅ NEW: Learning Tab */}
+        <p
+          className="menu-item"
+          onClick={() => navigate("/learning")}
+        >
+          Learning
+        </p>
+
+        {/* ✅ NEW: Revision Tab */}
+        <p
+          className="menu-item"
+          onClick={() => navigate("/revision")}
+        >
+          Revision
+        </p>
       </div>
 
       {/* Main */}
