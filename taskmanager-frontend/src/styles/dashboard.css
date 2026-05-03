@@ -185,3 +185,161 @@
     width: 100%;
   }
 }
+.stats {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  flex: 1;
+  padding: 15px;
+  background: #f4f6f8;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.task-card {
+  background: white;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  margin-top: 10px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.badge.pending {
+  background: #ffe58f;
+}
+
+.badge.completed {
+  background: #b7eb8f;
+}
+/* Learning Container */
+.learning-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Add Topic Card */
+.learning-card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.learning-card input,
+.learning-card textarea {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.learning-card button {
+  margin-top: 10px;
+  padding: 10px;
+  background: #1677ff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* Topic List */
+.learning-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Topic Card */
+.learning-item {
+  background: #fff;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+/* Stage Badge */
+.stage-badge {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: #e6f4ff;
+  font-size: 12px;
+}
+/* Revision Container */
+.revision-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Card */
+.revision-card {
+  background: white;
+  padding: 18px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* Description */
+.desc {
+  margin: 5px 0 10px;
+  color: #555;
+}
+
+/* Stage Badge */
+.stage-badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 8px;
+  color: white;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+/* Next date */
+.next-date {
+  font-size: 12px;
+  color: #888;
+}
+
+/* Buttons */
+.revision-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.revision-actions button {
+  flex: 1;
+  padding: 8px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+button.hard {
+  background: #ffccc7;
+}
+
+button.revise {
+  background: #bae0ff;
+}
+
+button.easy {
+  background: #d9f7be;
+}

@@ -17,7 +17,10 @@ public class LearningTopic {
     private LocalDate nextRevisionDate;
     private LocalDate lastReviewedDate;
 
-    // Constructors
+    // 🔥 NEW
+    private int streak;
+    private LocalDate lastActiveDate;
+
     public LearningTopic() {}
 
     public LearningTopic(String title, String description) {
@@ -25,9 +28,9 @@ public class LearningTopic {
         this.description = description;
         this.stage = 1;
         this.nextRevisionDate = LocalDate.now().plusDays(1);
+        this.streak = 0;
     }
 
-    // Getters & Setters
     public Long getId() { return id; }
 
     public String getTitle() { return title; }
@@ -47,5 +50,13 @@ public class LearningTopic {
     public LocalDate getLastReviewedDate() { return lastReviewedDate; }
     public void setLastReviewedDate(LocalDate lastReviewedDate) {
         this.lastReviewedDate = lastReviewedDate;
+    }
+
+    public int getStreak() { return streak; }
+    public void setStreak(int streak) { this.streak = streak; }
+
+    public LocalDate getLastActiveDate() { return lastActiveDate; }
+    public void setLastActiveDate(LocalDate lastActiveDate) {
+        this.lastActiveDate = lastActiveDate;
     }
 }

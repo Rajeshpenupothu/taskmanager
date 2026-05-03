@@ -31,8 +31,6 @@ function App() {
         <Route path="/oauth-success" element={<OAuthSuccess />} />
         <Route path="/forgot" element={<ForgotPassword />} />
         <Route path="/reset/:token" element={<ResetPassword />} />
-        <Route path="/learning" element={<Learning />} />
-        <Route path="/revision" element={<Revision />} />
 
         {/* 🔒 Protected Route */}
         <Route

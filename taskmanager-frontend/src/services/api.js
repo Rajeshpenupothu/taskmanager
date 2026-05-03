@@ -18,24 +18,26 @@ API.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// ✅ RESPONSE INTERCEPTOR (SAFE VERSION)
+// ✅ RESPONSE INTERCEPTOR (FIXED VERSION)
 API.interceptors.response.use(
   (response) => response,
   (error) => {
     const status = error.response?.status;
     const token = localStorage.getItem("token");
 
-    // 🚫 DO NOT redirect for login API
-    const isLoginRequest = error.config?.url?.includes("/auth/login");
+    const url = error.config?.url || "";
 
-    // 🔥 Redirect ONLY if:
-    // - 401 error
-    // - token exists (user was logged in)
-    // - NOT a login request
-    if (status === 401 && token && !isLoginRequest) {
+    // 🚫 DO NOT redirect for:
+    // - login request
+    // - learning/revision APIs
+    const isLoginRequest = url.includes("/auth/login");
+    const isTopicRequest = url.includes("/topics");
+
+    if (status === 401 && token && !isLoginRequest && !isTopicRequest) {
+      console.warn("🔐 Token expired or invalid → logging out");
+
       localStorage.removeItem("token");
 
-      // prevent reload loop
       if (window.location.pathname !== "/") {
         window.location.replace("/");
       }
